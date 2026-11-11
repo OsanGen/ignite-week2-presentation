@@ -476,31 +476,6 @@ button:enabled { cursor: pointer; }
   gap: 10px;
 }
 
-.scene-branch {
-  position: relative;
-  padding-block-start: 14px;
-}
-
-.scene-branch::before {
-  content: "";
-  position: absolute;
-  top: 5px;
-  left: 25%;
-  right: 25%;
-  height: 9px;
-  border: 1px solid #8e9aa5;
-  border-bottom: 0;
-}
-
-.scene-branch::after {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: 50%;
-  height: 5px;
-  border-inline-start: 1px solid #8e9aa5;
-}
-
 .scene-stack, .scene-mobile-cards {
   display: grid;
   gap: 8px;
@@ -517,14 +492,7 @@ button:enabled { cursor: pointer; }
 
 .scene-card { display: grid; align-content: start; gap: 5px; }
 
-.scene-card.scene-stop { border-inline-end: 3px solid #8e9aa5; }
-
 .scene-card strong, .scene-node strong { font-weight: 725; }
-
-.scene-card-footer {
-  color: var(--muted);
-  font-size: .875rem;
-}
 
 .scene-path {
   display: flex;
@@ -566,6 +534,12 @@ button:enabled { cursor: pointer; }
   transform: translateY(-50%);
 }
 
+@container (min-width: 361px) {
+  .scene:is([data-state="W2-S12-P01"], [data-state="W2-S13-P03"]) .scene-path--horizontal .scene-node {
+    flex-basis: auto;
+  }
+}
+
 .scene-list {
   display: grid;
   gap: 6px;
@@ -595,6 +569,15 @@ button:enabled { cursor: pointer; }
 
 .scene-record .scene-row:has(dd:nth-of-type(2)) {
   grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.scene-linked-rows {
+  border-inline-start: 2px solid #8e9aa5;
+  padding-inline-start: 10px;
+}
+
+.scene-record .scene-group-row {
+  grid-template-columns: max-content minmax(0, 1fr);
 }
 
 .scene-record .scene-total {
@@ -634,11 +617,6 @@ button:enabled { cursor: pointer; }
 .scene-prompt {
   font-size: 1.125em;
   font-weight: 720;
-}
-
-.scene-flow-with-note {
-  display: grid;
-  gap: 12px;
 }
 
 .scene-inventory {
@@ -736,33 +714,8 @@ button:enabled { cursor: pointer; }
 
 .scene-mobile-cards .scene-record .scene-row { padding: 5px 7px; }
 
-@container (min-width: 390px) {
-  @supports (grid-template-rows: subgrid) {
-    .scene-flow-with-note {
-      grid-template-columns: minmax(0, 1.1fr) minmax(0, .9fr);
-      grid-template-rows: repeat(6, auto);
-      row-gap: 17px;
-    }
-
-    .scene-flow-with-note > .scene-path {
-      display: grid;
-      grid-column: 1;
-      grid-row: 1 / -1;
-      grid-template-rows: subgrid;
-    }
-
-    .scene-flow-with-note > .scene-callout {
-      grid-column: 2;
-      grid-row: 2;
-      align-self: center;
-    }
-  }
-}
-
 @container (max-width: 360px) {
   .scene-grid, .scene-cards { grid-template-columns: minmax(0, 1fr); }
-  .scene-branch { padding-block-start: 0; }
-  .scene-branch::before, .scene-branch::after { display: none; }
   .scene-path--horizontal { flex-direction: column; }
   .scene-path--horizontal .scene-connector {
     inset: auto auto -18px 50%;

@@ -111,14 +111,6 @@
     return element("h2", "scene-title", text);
   }
 
-  function numberedCard(tone, title, ...lines) {
-    return card(
-      tone,
-      heading(title),
-      ...lines.map((line) => element("p", "scene-task-line", line)),
-    );
-  }
-
   function inventory(line) {
     const [terms, total] = line(2).split(" = ");
     const [scripts, decks, videos] = terms.split(" + ");
@@ -210,15 +202,15 @@
       heading(line(1)),
       card(
         "sky",
-        cardTitle(line(2)),
-        path(line(3), { tones: ["mint"], emphasized: 0 }),
-        element("p", "scene-card-footer", line(4)),
+        path(line(2), { tones: ["mint"], emphasized: 0 }),
+        record([[line(3), "mint"], [line(4), "yellow"]]),
+        strip(line(5)),
       ),
     ],
 
     "evidence-boundary": (line) => [
       heading(line(1)),
-      stack(strip(line(2), "sky"), strip(line(3), "yellow"), strip(line(4))),
+      record([[line(2), "sky"], [line(3), "yellow"], [line(4)]]),
       comparison(line(5)),
     ],
 
@@ -253,20 +245,20 @@
 
     "baseline-guardrails": (line) => [
       heading(line(1)),
-      stack(strip(line(2), "sky"), strip(line(3), "yellow"), strip(line(4))),
-      comparison(line(5)),
+      element("div", "scene-linked-rows", record([[line(2), "sky"], [line(3), "sky"], [line(4), "sky"]])),
+      stack(strip(line(5)), comparison(line(6))),
     ],
 
     "review-topic-cards": (line) => [
       heading(line(1)),
-      stack(topic(line(2), "sky", true), topic(line(3), "mint", true)),
-      strip(line(4)),
+      record([2, 3, 4, 5, 6].map((number) => [line(number), "sky", "scene-group-row"])),
+      strip(line(7)),
     ],
 
     "allocation-comparisons": (line) => [
       heading(line(1)),
-      stack(comparison(line(2)), comparison(line(3)), comparison(line(4))),
-      callout(line(5)),
+      record([[line(2), "sky"], [line(3)], [line(4)], [line(5), "mint"]]),
+      strip(line(6)),
     ],
 
     "hosting-evidence-discussion": (line) => [
@@ -277,24 +269,22 @@
 
     "cost-records-workflow": (line) => [
       heading(line(1)),
-      element(
-        "div",
-        "scene-flow-with-note",
-        path(line(2), { emphasized: 1 }),
-        callout(line(3), "sky"),
-      ),
-      comparison(line(4)),
+      path(line(2), { emphasized: 1 }),
+      record([[line(3), "mint"], [line(4), "yellow"]]),
+      comparison(line(5)),
     ],
 
     "test-prerequisites": (line) => [
       heading(line(1)),
-      questions(...[2, 3, 4, 5, 6].map(line)),
+      card("neutral", record([[line(2), "mint"], [line(3), "yellow"], [line(4)]]), callout(line(5)), strip(line(6))),
     ],
 
     "two-work-paths": (line) => [
       heading(line(1)),
-      stack(topic(line(2), "sky"), topic(line(3), "yellow")),
-      stack(strip(line(4)), strip(line(5))),
+      topic(line(2), "sky"),
+      record([[line(3)]]),
+      topic(line(4)),
+      stack(strip(line(5)), strip(line(6))),
     ],
 
     "course-identifiers": (line) => [
@@ -369,22 +359,21 @@
 
     "preview-check": (line) => [
       heading(line(1)),
-      path([2, 3, 4, 5].map(line), { tones: ["sky", "neutral", "neutral", "sky"], emphasized: 3 }),
-      callout(line(6)),
+      record([[line(2), "sky"], [line(3)], [line(4), "sky", "is-emphasized"], [line(5)], [line(6)]]),
     ],
 
     "mixed-file-review": (line) => [
       heading(line(1)),
-      grid(topic(line(2), "sky"), topic(line(3))),
-      topic(line(4), "yellow"),
-      comparison(line(5)),
+      record([[line(2), "sky"], [line(3), "mint"]]),
+      record([[line(4), "yellow"], [line(5)]]),
+      comparison(line(6)),
     ],
 
     "posting-trace": (line) => [
       heading(line(1)),
-      path(line(2), { direction: "horizontal" }),
-      path(line(3), { direction: "horizontal", connector: "↔", tones: ["sky", "sky", "sky"] }),
-      record([[line(4)], [line(5), "yellow"]]),
+      record([[line(2), "sky"], [line(3)], [line(4)], [line(5)]]),
+      strip(line(6)),
+      record([[line(7)]]),
     ],
 
     "missing-rate": (line) => [
@@ -408,24 +397,18 @@
       prompt(line(6)),
     ],
 
-    "duplicate-expectation": (line) => {
-      const stopped = topic(line(4), "neutral", true);
-      stopped.classList.add("scene-stop");
-      const branches = grid(topic(line(3)), stopped);
-      branches.classList.add("scene-branch");
-      return [
-        heading(line(1)),
-        strip(line(2), "sky"),
-        branches,
-        strip(line(5)),
-        record([[line(6)]]),
-      ];
-    },
+    "duplicate-expectation": (line) => [
+      heading(line(1)),
+      strip(line(2), "sky"),
+      record([[line(3), "sky", "is-emphasized"], [line(4)], [line(5)]]),
+      record([[line(6)]]),
+    ],
 
     "expense-identity": (line) => [
       heading(line(1)),
       stack(comparison(line(2)), comparison(line(3))),
-      record([[line(4), "yellow"], [line(5)]]),
+      strip(line(4)),
+      record([[line(5), "yellow"], [line(6)]]),
     ],
 
     "r1-usage": (line) => [
@@ -445,8 +428,9 @@
 
     "reconciliation-path": (line) => [
       heading(line(1)),
-      path(line(2), { direction: "horizontal", tones: ["sky", "sky"] }),
-      stack(strip(line(3)), callout(line(4))),
+      path(line(2), { direction: "horizontal", tones: ["sky", "sky", "neutral", "neutral"] }),
+      record([[line(3)], [line(4)]]),
+      stack(strip(line(5)), strip(line(6))),
     ],
 
     "expectations-table": reconciliation,
@@ -455,20 +439,20 @@
       heading(line(1)),
       record([[line(2), "sky"], [line(3)]]),
       strip(line(4)),
-      comparison(line(5), true),
+      stack(comparison(line(5)), comparison(line(6))),
     ],
 
     "export-evidence": (line) => [
       heading(line(1)),
-      card("neutral", questions(...[2, 3, 4, 5, 6].map(line))),
-      callout(line(7)),
+      path(line(2), { direction: "horizontal" }),
+      record([[line(3), "sky"], [line(4)], [line(5)]]),
+      record([[line(6)]]),
     ],
 
     "replay-basis": (line) => [
       heading(line(1)),
-      card("sky", element("p", "scene-equation", line(2)), element("p", "scene-equation", line(3))),
-      strip(line(4), "yellow", true),
-      strip(line(5)),
+      record([[line(2), "sky"], [line(3)], [line(4)]]),
+      record([[line(5), "sky", "is-emphasized"], [line(6)]]),
     ],
 
     "financial-vs-diagnostic": (line) => [
@@ -479,55 +463,63 @@
     ],
 
     "oscar-handoff": (line) => [
-      numberedCard("sky", ...[1, 2, 3, 4].map(line)),
-      callout(line(5), "yellow", true),
+      card("sky", heading(line(1)), record([[line(2)], [line(3)]]), callout(line(4))),
+      stack(strip(line(5)), strip(line(6))),
     ],
 
     "shania-return": (line) => [
-      numberedCard("mint", ...[1, 2, 3, 4].map(line)),
-      callout(line(5)),
+      card("mint", heading(line(1)), record([[line(2)], [line(3)], [line(4)]])),
+      stack(strip(line(5)), strip(line(6)), strip(line(7))),
+      comparison(line(8)),
     ],
 
     "kailun-return": (line) => [
-      numberedCard("yellow", ...[1, 2, 3, 4].map(line)),
-      strip(line(5)),
-      callout(line(6)),
+      card(
+        "yellow",
+        heading(line(1)),
+        path(line(2), { direction: "horizontal" }),
+        strip(line(3)),
+        topic(line(4)),
+      ),
+      record([[line(5)]]),
+      stack(strip(line(6)), strip(line(7))),
+      record([[line(8)]]),
     ],
 
     "proposed-returns": (line) => [
       heading(line(1)),
       stack(topic(line(2), "mint"), topic(line(3), "yellow")),
-      record([[line(4)], [line(5), "yellow"]]),
-      strip(line(6)),
+      record([[line(4)], [line(5)], [line(6), "yellow"]]),
+      strip(line(7)),
     ],
 
     "finding-fields": (line) => [
       heading(line(1)),
-      card("sky", questions(...[2, 3, 4, 5, 6].map(line))),
-      record([[line(7), "yellow"]]),
+      record([[line(2)], [line(3)], [line(4)], [line(5)]]),
+      comparison(line(6)),
     ],
 
     "finding-classification": (line) => [
       heading(line(1)),
-      record([2, 3, 4, 5].map((index) => [line(index)])),
-      stack(strip(line(6)), strip(line(7))),
+      record([[line(2), "mint"], [line(3), "yellow"]]),
+      record([[line(4)], [line(5)], [line(6)]]),
     ],
 
     "correction-rechecks": (line) => [
       heading(line(1)),
-      path(line(2), { direction: "horizontal" }),
-      strip(line(3), "sky", true),
-      stack(strip(line(4)), strip(line(5))),
-      comparison(line(6)),
+      record([[line(2), "mint"], [line(3), "yellow"]]),
+      strip(line(4)),
+      path(line(5), { emphasized: 1 }),
+      record([[line(6)]]),
     ],
 
     "completion-definitions": (line) => [
       heading(line(1)),
       stack(
-        card("neutral", cardTitle(line(2)), element("p", "", line(3))),
-        card("sky", cardTitle(line(4)), element("p", "", line(5))),
+        card("mint", topic(line(2), "mint"), strip(line(3))),
+        card("yellow", topic(line(4), "yellow"), strip(line(5))),
       ),
-      record([[line(6), "yellow"]]),
+      record([[line(6)], [line(7)]]),
     ],
 
     "next-topic-boundaries": (line) => [
@@ -540,8 +532,8 @@
       heading(line(1)),
       prompt(line(2)),
       element("p", "", line(3)),
-      questions(...[4, 5, 6].map(line)),
-      callout(line(7)),
+      questions(...[4, 5].map(line)),
+      callout(line(6)),
     ],
   };
 
